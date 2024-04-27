@@ -25,23 +25,22 @@ while (data.rstrip("\n") != "EOF"):
 	# calculate the time delta (and output if debugging)
 	delta = round(t1 - t0, 3)
 	values.append(delta)
-	if(delta >= 0.09):
+	if(delta >= 0.08):
 		binary += "1"
 	else:
 		binary += "0" 
 
-
-
-
 # close the connection to the server
 s.close()
 #print(binary)
-print(values)
+#print(values)
 
+#separates the binary into bytes
 byte_size = 8
 binary_bytes = [binary[i:i+byte_size] for i in range(0, len(binary), byte_size)]
 print(binary_bytes)
 
+#converts to ascii and creates final message
 ascii_string = ''.join([chr(int(byte, 2)) for byte in binary_bytes])
 final = ""
 final = ascii_string.split("EOF", 1)[0]
