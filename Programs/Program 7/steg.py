@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-SENTINEL = bytearray([0x0, 0xff, 0x0, 0x0, 0xff, 0x0])
+SENTINEL = [0x0, 0xff, 0x0, 0x0, 0xff, 0x0]
 
 def store_byte_mode(offset, interval, wrapper_file, hidden_file):
     """Store hidden data using byte mode."""
@@ -10,49 +10,61 @@ def store_byte_mode(offset, interval, wrapper_file, hidden_file):
 
     with open(hidden_file, 'rb') as hidden:
         hidden_data = bytearray(hidden.read())
-    
-    wrapper_size = len(wrapper_data)
-    hidden_size = len(hidden_data)
-    interval = max(interval, 1)
 
     i = 0
     while i < len(hidden_data):
-        wrapper_data[offset] = hidden_data[i]
-        offset += interval
-        i += 1
+        if (offset >= len(wrapper_data)):
+            wrapper_data.append(0x00)
+        else:
+            wrapper_data[offset] = hidden_data[i]
+            i += 1
     
     i = 0
     while i < len(SENTINEL):
-        wrapper_data[offset] = SENTINEL[i]
-        offset += interval
-        i += 1
+        if offset >= len(wrapper_data):
+            wrapper.append(0x00)
+        else:
+            wrapper_data[offset] = SENTINEL[i]
+            offset += interval
+            i += 1
     
-    with open('output.jpg', 'wb') as output_file:
-        output_file.write(wrapper_data)
+    sys.stdout.buffer.write(wrapper_data)
 
-
+c
 def retrieve_byte_mode(offset, interval, wrapper_file):
     """Retrieve hidden data using byte mode."""
     with open(wrapper_file, 'rb') as wrapper:
         wrapper_data = bytearray(wrapper.read())
     
     extracted_data = bytearray()
-    wrapper_size = len(wrapper_data)
-    interval = max(interval, 1)
-    offset += len(SENTINEL)  # Skip past the sentinel
+    checkSent = []
+    check = 0
 
-    while offset < wrapper_size:
-        extracted_data.append(wrapper_data[offset])
+    while offset < len(wrapper_size):
+        b = wrapper_data[offset]
+        if b == SENTINEL[0]:
+            checkSent = []
+            offset2 = offset
+            test = b
+            for byte in SENTINEL:
+                checkSent.append(test)
+                offset2 += interval
+                if offset2 <= len(wrapper_data):
+                    test = wrapper_data[offset2]
+            if checkSent == SENTINEL:
+                offset = offset + interval
+                b = wrapper_data[offset]
+                break
+        extracted_data.append(b)
         offset += interval
     
-    with open('extracted_hidden_data.jpg', 'wb') as extracted_file:
-        extracted_file.write(extracted_data)
+    sys.stdout.buffer.write(extracted_data))
 
 def main():
     """Main function to parse command-line arguments and execute appropriate operations."""
     # Initialize argument parser with description
     parser = argparse.ArgumentParser(description="Hide or retrieve data from a wrapper file using steganography")
-    
+
     # Define command-line arguments
     parser.add_argument("-s", action="store_true", help="Store hidden data")
     parser.add_argument("-r", action="store_true", help="Retrieve hidden data")
@@ -65,7 +77,7 @@ def main():
 
     # Parse command-line arguments
     args = parser.parse_args()
-
+    
     # Check for conflicting options
     if args.s and args.r:
         print("Error: Both store (-s) and retrieve (-r) options cannot be specified at the same time.")
