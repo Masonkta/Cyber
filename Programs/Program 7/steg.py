@@ -31,7 +31,37 @@ def store_byte_mode(offset, interval, wrapper_file, hidden_file):
     sys.stdout.buffer.write(wrapper_data)
 
 def store_bit_mode(offset, interval, wrapper_file, hidden_file):
-    pass
+    with open(wrapper_file, 'rb') as wrapper:
+        wrapper_data = bytearray(wrapper.read())
+
+    with open(hidden_file, 'rb') as hidden:
+        hidden_data = bytearray(hidden.read())
+
+    i = 0
+    while i < len(hidden_data):
+        for j in range(7):
+            wrapper_data[offset] &= 0b11111110
+            wrapper[offset] |= ((hidden_data[i]& 0b10000000) >> 7)
+            if(hidden_data[i] << 1 > 255):
+                hidden_data[i] = (hidden_data[i]<<1)&(2**8-1)
+            else:
+                hidden_data[i]<<=1
+                
+                offset += interval
+    
+    i = 0
+    while i < len(SENTINEL):
+        for j in range(7):
+            wrapper_data[offset] &= 0b11111110
+            wrapper_data[offset] |= ((SENTINEL[i] & 0b10000000) >> 7)
+            if(SENTINEL[i] << 1 > 255):
+                SENTINEL[i] = (SENTINEL[i]<<1)&(2**8-1)
+            else:
+                SENTINEL[i] <<=1
+            offset += interval
+        i+=1
+
+    sys.stdout.buffer.write(wrapper)
 
 def retrieve_byte_mode(offset, interval, wrapper_file):
     """Retrieve hidden data using byte mode."""
