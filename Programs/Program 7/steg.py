@@ -42,7 +42,7 @@ def retrieve_byte_mode(offset, interval, wrapper_file):
     checkSent = []
     check = 0
 
-    while offset < len(wrapper_size):
+    while offset < len(wrapper_data):
         b = wrapper_data[offset]
         if b == SENTINEL[0]:
             checkSent = []
@@ -81,34 +81,31 @@ def retrieve_bit_mode(offset, interval, wrapper_file):
 
             # grab lsb
             lsb = wrapper_data[offset] & 1
-            lsb_shift = lsb_shift ^ (lsb << 7-j) # 7-j # this might have to be reversed?
+            lsb_shift = lsb_shift ^ (lsb << 7-j)
 
-            # increment offset
             offset += interval
 
-            byte = lsb_shift#bytearray(lsb_shift)
+        byte = lsb_shift#bytearray(lsb_shift)
 
-            # check if byte matches sentinel
-            if byte == SENTINEL[sentinel_count]:
-                # save byte, update sentinel index
-                hidden_sentinel.append(byte)
-                sentinel_count += 1
-            else:
-                # if hidden sentinel is full, then store values and reset
-                if len(hidden_sentinel) > 0:
-                    #print(len(hidden_sentinel))
-                    hidden_sentinel.reverse()
-                    for byte_hs in hidden_sentinel:
-                        hidden.append(byte_hs)
-                    sentinel_count = 0
-                    hidden_sentinel = []
+        # check if byte matches sentinel
+        if byte == SENTINEL[sentinel_count]:
+            # save byte, update sentinel index
+            hidden_sentinel.append(byte)
+            sentinel_count += 1
+        else:
+            # if hidden sentinel is full, then store values and reset
+            if len(hidden_sentinel) > 0:
+                hidden_sentinel.reverse()
+                for byte_hs in hidden_sentinel:
+                    hidden.append(byte_hs)
+                sentinel_count = 0
+                hidden_sentinel = []
 
                 # save current byte to final file
-                hidden.append(byte)
+            hidden.append(byte)
 
-            # check sentinels
-            if hidden_sentinel == SENTINEL:
-                break
+        if hidden_sentinel == SENTINEL:
+            break
     sys.stdout.buffer.write(bytearray(hidden))
 
 def main():
