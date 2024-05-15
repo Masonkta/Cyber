@@ -18,8 +18,13 @@ def main():
                 patterns_in.append(pattern)
             else:
                 patterns_out.append(pattern)
-    print(patterns_in)
-    print(patterns_out)
+
+    with open(sys.argv[1], 'r') as file:
+        text = file.read()
+
+    for p_in, p_out in zip(patterns_in, patterns_out):
+        text = text.replace(p_in, p_out)
+    print(text)
 
 if __name__ == "__main__":
     main()
