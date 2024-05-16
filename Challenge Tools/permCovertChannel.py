@@ -2,10 +2,10 @@ from ftplib import FTP
 
 METHOD = 10
 
-ftp_ip = '10.7.88.94'  
-ftp_user = 'anonymous'
-ftp_password = ''
-port = ''
+ftp_ip = '138.47.99.64'  
+ftp_user = 'salt'
+ftp_password = 'tlasdf08b'
+port = '1221'
 
 ftp = FTP()
 ftp.connect(ftp_ip)
